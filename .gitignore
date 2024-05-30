@@ -1,1 +1,10 @@
 oldfile/
+file_up_failed/
+file_up_passed/
+node_modules/
+*.csv
+*.txt
+uploadslogs
+uploads/
+package-lock.json
+pushauto
