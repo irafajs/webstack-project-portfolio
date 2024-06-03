@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.post('/adminusers', AdminUser.postNew);
 router.post('/login', Login.getLogin);
+router.post('/cashierlogin', Login.getLoginTeller);
 router.post('/logout', Logout.getLogout);
 router.post('/cashiers',CashierUsers.postNewCashier);
 router.post('/fileupload', checkFileValid.postFile);

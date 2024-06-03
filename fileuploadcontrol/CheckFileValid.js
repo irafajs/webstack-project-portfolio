@@ -31,6 +31,7 @@ class CheckFileValid {
     this.validateCSV = this.validateCSV.bind(this);
     this.saveFile = this.saveFile.bind(this);
     this.logToFile = this.logToFile.bind(this);
+    this.saveToDatabase = this.saveToDatabase.bind(this);
   }
 
   async isAdminLogged(workId) {
@@ -41,16 +42,18 @@ class CheckFileValid {
     return new Promise((resolve, reject) => {
       const results = [];
       const errors = [];
+      const headers = ['ITEM_NO', 'PROD_NAME', 'PROD_DESC', 'PROD_QUANTITY', 'BUY_PRICE', 'SELLING_PRICE'];
 
       fs.createReadStream(filePath)
-        .pipe(csv())
+        .pipe(csv({ separator: ',', headers }))
         .on('data', (row) => {
           const columns = Object.values(row);
+
           if (columns.length !== 6) {
-            errors.push('Incorrect number of columns');
+            errors.push(`Row ${results.length + 1} has incorrect number of columns`);
           } else {
-            columns.forEach((col, index) => {
-              if ([0, 3, 4, 5].includes(index) && /\s/.test(col)) {
+            [0, 3, 4, 5].forEach((index) => {
+              if (/\s/.test(columns[index])) {
                 errors.push(`Row ${results.length + 1} Column ${index + 1} has spaces`);
               }
             });
@@ -59,9 +62,9 @@ class CheckFileValid {
         })
         .on('end', () => {
           if (errors.length === 0) {
-            resolve({ isValid: true, errors: null });
+            resolve({ isValid: true, errors: null, data: results });
           } else {
-            resolve({ isValid: false, errors });
+            resolve({ isValid: false, errors, data: null });
           }
         })
         .on('error', (error) => {
@@ -70,14 +73,24 @@ class CheckFileValid {
     });
   }
 
-  async saveFile(filePath, targetPath, logMessage = null) {
-    const fileName = path.basename(filePath);
+  async saveFile(file, targetPath, logMessage = null) {
+    const fileName = file.originalname;
     const targetFilePath = path.join(targetPath, fileName);
-    fs.renameSync(filePath, targetFilePath);
+    fs.copyFileSync(file.path, targetFilePath);
+    fs.unlinkSync(file.path);
 
     if (logMessage) {
-      fs.writeFileSync(path.join(targetPath, `${FileName}.log`), logMessage.join('\n'));
+      fs.writeFileSync(path.join(targetPath, `${fileName}.log`), logMessage.join('\n'));
     }
+  }
+
+  async saveToDatabase(fileName, fileContent) {
+    const collection = dbClient.db.collection('file_uploads');
+    const document = {
+      fileName,
+      fileContent
+    };
+    await collection.insertOne(document);
   }
 
   logToFile(message) {
@@ -112,15 +125,16 @@ class CheckFileValid {
         return res.status(400).json({ error: 'Invalid file format' });
       }
 
-      const { isValid, errors } = await this.validateCSV(filePath);
+      const { isValid, errors, data } = await this.validateCSV(filePath);
 
       if (isValid) {
-        await this.saveFile(filePath, this.successPath);
-        const successMessage = 'File successfully processed';
+        await this.saveFile(file, this.successPath);
+        await this.saveToDatabase(file.originalname, data);
+        const successMessage = 'File successfully processed and saved to database';
         this.logToFile(successMessage);
         return res.status(200).json({ message: 'File processed successfully' });
       } else {
-        await this.saveFile(filePath, this.failPath, errors);
+        await this.saveFile(file, this.failPath, errors);
         const errorMessage = 'File failed validation';
         this.logToFile(`${errorMessage}: ${errors.join(', ')}`);
         return res.status(400).json({ message: `File validation failed` });
