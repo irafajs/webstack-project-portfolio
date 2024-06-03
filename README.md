@@ -1,8 +1,7 @@
 WEBSTACK-PROJECT-PORTFOLIO FINAL
 
 This is a readme for the end project of my SE journey at ALX
-
-First of all, I want to thank ALX for choosing me to participate in this experience it was not ease, they were time I doubted myself that I would not finish, but here I am referencing to the first time I opened ALX page to register, wrong story shot, I am grateful.
+____________________________________________________________
 
 Our application at full capacity should be a management application for a small store, boutique, or supermarket.
 
@@ -16,20 +15,28 @@ this dependencies assist to run the code, for example bcrypt will be used to enc
 We have our app.js file that runs the whole routes.
 
 We have our routes directory that set and import all routes to be used.
-We have storage to handle the DB connection.
-We have uses to handle users creation.
+We have storage modules to handle the DB connection.
+We have users modules to handle users creation.
 
-The user for this store are of 2 type
+The users for this store are of 2 types:
+_______________________________________
 
-Administrator (manager of the store), in charge of the store overall, create cashier users, upload the new stock item… 
+Administrator (manager of the store), in charge of the store overall.
 
-Cashier users will be able to sel, cashier can edit the data only by removing the scanned item, increasing item number is not possible.
+some of what he can do in oou app are: 
+	Create cashier users, 
+	Upload the new stock item…
+	Edit the wrong caption of the cashiers 
+
+Cashier users will be able to sell:
+	Cashier can sell by reducing quantity of an item in numbers
+	To edit item for the cashier is not possible.
 
 TO CREATE AN ADMIN ACCCOUT WE NEED TO PROVIDE 
 ____________________________________________
 
-FULLNAMES, 
-EMAIL, AND 
+FULLNAMES OF THE ADMIN, 
+HIS EMAIL, AND 
 PASSWORD. 
 
 BELOW IS AN EXAMPLE OF HOW TO CREATE FROM CLI
@@ -49,7 +56,7 @@ WorkId of the administartor who is creating the user.
 
 run this command to crate a cashier
 
-Admin loging in 
+Admin logging in 
 curl 0.0.0.0:3000/login -XPOST -H "Content-Type: application/json" -d '{ "workId": "0003", "password": "New123456789" }' ; echo ""
 
 admin creating a cashier
@@ -68,3 +75,21 @@ curl 0.0.0.0:3000/login -XPOST -H "Content-Type: application/json" -d '{ "workId
 ADMIN UPLOADING DOCUMENT
 
 curl -X POST 0.0.0.0:3000/fileupload -H "Content-Type: multipart/form-data" -F "workId=0003" -F "fileUpload=@/home/vagrant/webstack-project-portfolio/testfile2.csv"
+
+TO LOGIN AS A CASHIER NEED TO RUN:
+__________________________________
+
+curl 0.0.0.0:3000/cashierlogin -XPOST -H "Content-Type: application/json" -d '{ "workCashierId": "T0004", "password": "New12345678" }' ; echo ""
+
+TO LOGOUT RUN THIS COMMAND:
+____________________________
+
+FOR CASHIERS:
+___________
+
+curl 0.0.0.0:3000/logout -XPOST -H "Content-Type: application/json" -d '{ "workCashierId": "T0004" }' ; echo ""
+
+FOR ADMINS:
+_________
+
+curl 0.0.0.0:3000/logout -XPOST -H "Content-Type: application/json" -d '{ "workId": "0004" }' ; echo ""
