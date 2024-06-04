@@ -7,7 +7,7 @@ class DBClient {
   constructor() {
     const host = process.env.HOST;
     const port = process.env.DB_PORT;
-    const database = process.env.DATABASE_NAME || 'store_management_system';
+    const database = process.env.DATABASE_NAME;
     const uri = `mongodb://${host}:${port}/${database}`;
 
     this.client = new MongoClient(uri);
