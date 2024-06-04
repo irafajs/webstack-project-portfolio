@@ -74,7 +74,7 @@ curl 0.0.0.0:3000/login -XPOST -H "Content-Type: application/json" -d '{ "workId
 
 ADMIN UPLOADING DOCUMENT
 
-curl -X POST 0.0.0.0:3000/fileupload -H "Content-Type: multipart/form-data" -F "workId=0003" -F "fileUpload=@/home/vagrant/webstack-project-portfolio/testfile2.csv"
+curl -X POST 0.0.0.0:3000/fileupload -H "Content-Type: multipart/form-data" -F "workId=0003" -F "fileUpload=@/home/vagrant/webstack-project-portfolio/testfile2.csv";echo""
 
 TO LOGIN AS A CASHIER NEED TO RUN:
 __________________________________
