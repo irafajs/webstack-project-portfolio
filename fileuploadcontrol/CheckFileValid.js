@@ -112,7 +112,7 @@ class CheckFileValid {
       if (!file) {
         const errorMessage = 'Please upload the file';
         this.logToFile(errorMessage);
-        return res.status(400).json({ error: 'File upload required' });
+        return res.status(400).json({ error: 'File to be uploaded is required' });
       }
 
       const filePath = file.path;
@@ -132,7 +132,7 @@ class CheckFileValid {
         await this.saveToDatabase(file.originalname, data);
         const successMessage = 'File successfully processed and saved to database';
         this.logToFile(successMessage);
-        return res.status(200).json({ message: 'File processed successfully' });
+        return res.status(200).json({ error: 'File processed successfully' });
       } else {
         await this.saveFile(file, this.failPath, errors);
         const errorMessage = 'File failed validation';
